@@ -7,6 +7,7 @@
         Title="HVAC Bus Scanner - Climatización"
         Height="800" Width="1280"
         MinHeight="600" MinWidth="900"
+        WindowState="Maximized"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource BackgroundBrush}">
     <Window.Resources>
