@@ -1,0 +1,32 @@
+# Binarios
+bin/
+obj/
+*.exe
+*.pdb
+*.cache
+*.nupkg
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+.idea/
+
+# Publicado
+publish/
+BuildOutput/
+
+# Configuración local
+appsettings.Development.json
+local.settings.json
+
+# Inno Setup
+Instalador/
+*.iss.dep
+
+# Logs
+*.log
+logs/

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>MBusScaner.ico</ApplicationIcon>
+    <AssemblyName>MBusScaner</AssemblyName>
+    <RootNamespace>MBusScaner</RootNamespace>
+    <Version>1.0.0</Version>
+    <Authors>Jose Manuel Bernabeu Mejias</Authors>
+    <Description>Software de escaneo y control de redes de climatización HVAC vía Modbus TCP/IP y BACnet/IP</Description>
+    <Copyright>Copyright © 2026 Jose Manuel Bernabeu Mejias</Copyright>
+    <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+</Project>

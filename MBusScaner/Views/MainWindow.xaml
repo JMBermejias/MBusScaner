@@ -1,0 +1,90 @@
+<Window x:Class="MBusScaner.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:viewModels="clr-namespace:MBusScaner.ViewModels"
+        xmlns:views="clr-namespace:MBusScaner.Views"
+        xmlns:converters="clr-namespace:MBusScaner.Converters"
+        Title="HVAC Bus Scanner - Climatización"
+        Height="800" Width="1280"
+        MinHeight="600" MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BackgroundBrush}">
+    <Window.Resources>
+        <converters:StatusToColorConverter x:Key="StatusToColorConverter"/>
+        <converters:BoolToColorConverter x:Key="BoolToColorConverter"/>
+        <converters:ProtocolToStringConverter x:Key="ProtocolToStringConverter"/>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0">
+
+            <!-- ===== Barra lateral de navegación ===== -->
+            <Border DockPanel.Dock="Left" Width="230" Background="{StaticResource SidebarGradient}">
+                <DockPanel>
+                    <!-- Logo / Título -->
+                    <StackPanel DockPanel.Dock="Top" Margin="20,20,20,30">
+                        <TextBlock Text="HVAC Scanner" FontSize="22" FontWeight="Bold" Foreground="White"/>
+                        <TextBlock Text="Red de Climatización" FontSize="12" Foreground="#BBDEFB" Margin="0,4,0,0"/>
+                        <Border Width="40" Height="4" Background="#00BCD4" CornerRadius="2" Margin="0,12,0,0" HorizontalAlignment="Left"/>
+                    </StackPanel>
+
+                    <!-- Botones de navegación -->
+                    <StackPanel DockPanel.Dock="Top" Margin="12,0">
+                        <Button Style="{StaticResource NavButtonStyle}"
+                                Tag="🔍"
+                                Content="Escanear Red"
+                                Command="{Binding ScanViewModel.ShowCommand, Mode=OneWay}"/>
+                        <Button Style="{StaticResource NavButtonStyle}"
+                                Tag="📟"
+                                Content="Dispositivos"
+                                Command="{Binding ScanViewModel.ShowCommand, Mode=OneWay}"/>
+                        <Button Style="{StaticResource NavButtonStyle}"
+                                Tag="⚙️"
+                                Content="Configuración"
+                                Command="{Binding SettingsViewModel.ShowCommand, Mode=OneWay}"/>
+                        <Button Style="{StaticResource NavButtonStyle}"
+                                Tag="ℹ️"
+                                Content="Información"
+                                Command="{Binding SettingsViewModel.ShowCommand, Mode=OneWay}"/>
+                    </StackPanel>
+
+                    <StackPanel DockPanel.Dock="Bottom" Margin="20,0,20,20">
+                        <TextBlock Text="Conectado a la red:" FontSize="11" Foreground="#BBDEFB"/>
+                        <TextBlock Text="{Binding LocalIP}" FontSize="14" FontWeight="Bold" Foreground="White"/>
+                        <TextBlock Text="{Binding SubnetString}" FontSize="12" Foreground="#BBDEFB" Margin="0,2,0,0"/>
+                        <Border Width="40" Height="4" Background="#2E7D32" CornerRadius="2" Margin="0,16,0,0" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <!-- ===== Contenido principal ===== -->
+            <ContentControl Content="{Binding CurrentViewModel}">
+                <ContentControl.Resources>
+                    <DataTemplate DataType="{x:Type viewModels:ScanViewModel}">
+                        <views:ScanView/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type viewModels:DeviceDetailViewModel}">
+                        <views:DeviceDetailView/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type viewModels:SettingsViewModel}">
+                        <views:SettingsView/>
+                    </DataTemplate>
+                </ContentControl.Resources>
+            </ContentControl>
+
+        </DockPanel>
+
+        <!-- ===== Barra de estado ===== -->
+        <Border Grid.Row="1" Background="{StaticResource PrimaryDarkBrush}" Padding="16,6">
+            <DockPanel>
+                <Ellipse DockPanel.Dock="Left" Width="10" Height="10" Fill="#4CAF50" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding StatusMessage}" Foreground="White" FontSize="12" TextTrimming="CharacterEllipsis"/>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>
