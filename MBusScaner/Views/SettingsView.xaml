@@ -82,7 +82,7 @@
             <Border Style="{StaticResource CardStyle}" Margin="8,20,8,8">
                 <StackPanel>
                     <TextBlock Text="Acerca de HVAC Bus Scanner" Style="{StaticResource LabelStyle}" FontSize="15"/>
-                    <TextBlock Text="Versión 1.0.0" Style="{StaticResource ValueStyle}" Margin="0,8,0,0"/>
+                    <TextBlock Text="{Binding AppVersion, StringFormat='Versión {0}'}" Style="{StaticResource ValueStyle}" Margin="0,8,0,0"/>
                     <TextBlock Text="Software de escaneo y control de redes de climatización (HVAC) mediante conexión RJ45."
                                Style="{StaticResource ValueStyle}" Margin="0,4,0,0"/>
                     <TextBlock Text="Protocolos soportados: Modbus TCP/IP y BACnet/IP"
