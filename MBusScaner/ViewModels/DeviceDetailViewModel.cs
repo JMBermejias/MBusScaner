@@ -125,8 +125,7 @@ namespace MBusScaner.ViewModels
         private void PopulateDeviceInfo()
         {
             // Añadir puertos y sensores estándar con valores de ejemplo
-            if (Device.Protocol == DeviceProtocol.ModbusTcp)
-            {
+            // (válidos para Modbus TCP y BACnet/IP, mostrados mientras se explora la ficha)
                 Ports.Add(new PortInfo
                 {
                     Address = 0,
@@ -197,7 +196,6 @@ namespace MBusScaner.ViewModels
                     Unit = "°C",
                     RegisterAddress = 6
                 });
-            }
         }
 
         private async Task SaveParameterAsync(object parameterObj)

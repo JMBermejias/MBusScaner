@@ -111,6 +111,7 @@ namespace MBusScaner.ViewModels
         public AsyncRelayCommand ScanCommand => new(ScanAsync, () => CanScan);
         public RelayCommand DetectNetworkCommand => new(DetectNetwork);
         public RelayCommand ShowCommand => new(_ => _main.NavigateTo(this));
+        public RelayCommand AddDeviceCommand => new(_ => _main.NavigateTo(_main.AddDeviceViewModel));
 
         public async Task ScanAsync()
         {

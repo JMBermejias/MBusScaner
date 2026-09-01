@@ -63,6 +63,10 @@
                     <TextBlock Text="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.Devices.Count, StringFormat=' {0} en total'}"
                                Style="{StaticResource ValueStyle}"
                                Margin="8,0,0,0" VerticalAlignment="Center"/>
+                    <Button DockPanel.Dock="Right"
+                            Content="➕ Añadir dispositivo"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            Command="{Binding AddDeviceCommand}"/>
                 </DockPanel>
 
                 <DataGrid ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.Devices}"

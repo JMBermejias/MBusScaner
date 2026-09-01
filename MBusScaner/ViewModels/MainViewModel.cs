@@ -28,6 +28,7 @@ namespace MBusScaner.ViewModels
         public ScanViewModel ScanViewModel { get; }
         public DeviceDetailViewModel DeviceDetailViewModel { get; }
         public SettingsViewModel SettingsViewModel { get; }
+        public AddDeviceViewModel AddDeviceViewModel { get; }
 
         public MainViewModel()
         {
@@ -40,6 +41,7 @@ namespace MBusScaner.ViewModels
             ScanViewModel = new ScanViewModel(this);
             DeviceDetailViewModel = new DeviceDetailViewModel(this);
             SettingsViewModel = new SettingsViewModel(this, _settingsService);
+            AddDeviceViewModel = new AddDeviceViewModel(this);
 
             _discoveryService.DiscoveryMessage += msg => AddLog(msg);
             _networkScanner.ScanStatusChanged += _ => { };

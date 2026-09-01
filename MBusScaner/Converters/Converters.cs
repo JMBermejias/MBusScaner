@@ -82,6 +82,23 @@ namespace MBusScaner.Converters
     }
 
     /// <summary>
+    /// Devuelve Visible si el texto no está vacío, en caso contrario Collapsed.
+    /// </summary>
+    public class StringNotEmptyToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return !string.IsNullOrWhiteSpace(value as string)
+                ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
     /// Muestra el ComboBox si el tipo de parámetro es una enumeración (enum).
     /// </summary>
     public class EnumToVisConverter : IValueConverter
