@@ -1,0 +1,98 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MBusScaner.Avalonia.ViewModels"
+             x:Class="MBusScaner.Avalonia.Views.DeviceDetailViewControl">
+
+    <Border Classes="card" Margin="16">
+        <DockPanel>
+            <!-- Cabecera con botones -->
+            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                <Button Classes="secondary" Content="← Volver" Command="{Binding GoBackCommand}" HorizontalAlignment="Left"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Classes="secondary" Content="🔄 Actualizar" Command="{Binding RefreshCommand}"/>
+                    <Button Classes="secondary" Content="🗑 Eliminar" Command="{Binding RemoveDeviceCommand}"/>
+                </StackPanel>
+            </DockPanel>
+
+            <TextBlock Classes="title" Text="Detalle del Dispositivo" DockPanel.Dock="Top" Margin="0,0,0,16"/>
+
+            <!-- Info del dispositivo -->
+            <Border Classes="card" DockPanel.Dock="Top" Background="{StaticResource PrimaryLightBrush}">
+                <Grid ColumnDefinitions="*,*,*,*">
+                    <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                        <TextBlock Classes="label" Text="Nombre"/>
+                        <TextBlock Classes="value" Text="{Binding DeviceName}" FontWeight="SemiBold"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Margin="0,0,16,0">
+                        <TextBlock Classes="label" Text="Dirección"/>
+                        <TextBlock Classes="value" Text="{Binding DeviceAddress}" FontWeight="SemiBold"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Margin="0,0,16,0">
+                        <TextBlock Classes="label" Text="Protocolo"/>
+                        <TextBlock Classes="value" Text="{Binding DeviceProtocolDisplay}" FontWeight="SemiBold"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="3">
+                        <TextBlock Classes="label" Text="Estado"/>
+                        <TextBlock Classes="value" Text="{Binding DeviceStatusText}" FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Fabricante / Modelo / Firmware -->
+            <Border Classes="card" DockPanel.Dock="Top">
+                <Grid ColumnDefinitions="*,*,*">
+                    <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                        <TextBlock Classes="label" Text="Fabricante"/>
+                        <TextBlock Classes="value" Text="{Binding DeviceManufacturer}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Margin="0,0,16,0">
+                        <TextBlock Classes="label" Text="Modelo"/>
+                        <TextBlock Classes="value" Text="{Binding DeviceModel}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Classes="label" Text="Firmware"/>
+                        <TextBlock Classes="value" Text="{Binding DeviceFirmware}"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <TextBlock Text="{Binding DeviceStatus}" Foreground="{StaticResource PrimaryBrush}"
+                       FontSize="12" DockPanel.Dock="Top" Margin="0,4,0,8"/>
+
+            <!-- Pestañas: Puertos / Sensores / Parámetros -->
+            <TabControl DockPanel.Dock="Top" Margin="0,0,0,12">
+                <TabItem Header="🔌 Puertos">
+                    <DataGrid ItemsSource="{Binding Ports}" AutoGenerateColumns="False" IsReadOnly="True" Background="Transparent" BorderThickness="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" Width="2*"/>
+                            <DataGridTextColumn Header="Tipo" Binding="{Binding Type}" Width="*"/>
+                            <DataGridTextColumn Header="Dirección" Binding="{Binding Address}" Width="*"/>
+                            <DataGridTextColumn Header="Valor" Binding="{Binding CurrentValue}" Width="*"/>
+                            <DataGridTextColumn Header="Unidad" Binding="{Binding Unit}" Width="*"/>
+                            <DataGridTextColumn Header="Función" Binding="{Binding Function}" Width="3*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+                <TabItem Header="🌡️ Sensores">
+                    <DataGrid ItemsSource="{Binding Sensors}" AutoGenerateColumns="False" IsReadOnly="True" Background="Transparent" BorderThickness="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" Width="2*"/>
+                            <DataGridTextColumn Header="Tipo" Binding="{Binding Type}" Width="*"/>
+                            <DataGridTextColumn Header="Valor" Binding="{Binding Value}" Width="*"/>
+                            <DataGridTextColumn Header="Unidad" Binding="{Binding Unit}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+                <TabItem Header="⚙️ Parámetros">
+                    <DataGrid ItemsSource="{Binding Parameters}" AutoGenerateColumns="False" IsReadOnly="True" Background="Transparent" BorderThickness="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" Width="2*"/>
+                            <DataGridTextColumn Header="Valor" Binding="{Binding DisplayValue}" Width="*"/>
+                            <DataGridTextColumn Header="Unidad" Binding="{Binding Unit}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+            </TabControl>
+        </DockPanel>
+    </Border>
+</UserControl>

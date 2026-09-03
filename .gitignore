@@ -17,7 +17,13 @@ obj/
 
 # Publicado
 publish/
+publish-linux/
+publish-win/
+publish-linux/
 BuildOutput/
+
+# Paquetes Linux (.deb)
+*.deb
 
 # Configuración local
 appsettings.Development.json

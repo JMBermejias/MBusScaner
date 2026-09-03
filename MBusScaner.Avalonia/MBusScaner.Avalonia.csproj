@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <AssemblyName>MBusScaner</AssemblyName>
+    <RootNamespace>MBusScaner</RootNamespace>
+    <Version>1.0.2</Version>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <Authors>Jose Manuel Bernabeu Mejias</Authors>
+    <Copyright>Copyright © 2026 Jose Manuel Bernabeu Mejias</Copyright>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.3" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <!-- Vincular Models, Services y Helpers del proyecto WPF (código compartido) -->
+  <ItemGroup>
+    <Compile Include="..\MBusScaner\Models\*.cs" Link="Models\%(Filename)%(Extension)"/>
+    <Compile Include="..\MBusScaner\Services\*.cs" Link="Services\%(Filename)%(Extension)"/>
+    <Compile Include="..\MBusScaner\Helpers\NetworkHelper.cs" Link="Helpers\NetworkHelper.cs"/>
+  </ItemGroup>
+</Project>

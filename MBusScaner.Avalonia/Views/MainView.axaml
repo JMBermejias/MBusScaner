@@ -1,0 +1,77 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:MBusScaner.Avalonia.ViewModels"
+        xmlns:views="using:MBusScaner.Avalonia.Views"
+        xmlns:conv="using:MBusScaner.Avalonia.Converters"
+        x:Class="MBusScaner.Avalonia.Views.MainView"
+        Title="HVAC Bus Scanner - Climatización"
+        Width="1280" Height="800" MinWidth="900" MinHeight="600"
+        WindowState="Maximized"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BackgroundBrush}">
+
+    <Window.Resources>
+        <conv:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
+    </Window.Resources>
+
+    <DockPanel>
+        <!-- Barra lateral -->
+        <Border DockPanel.Dock="Left" Width="230" Background="{StaticResource SidebarGradient}">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Margin="20,20,20,30">
+                    <TextBlock Text="HVAC Scanner" FontSize="22" FontWeight="Bold" Foreground="White"/>
+                    <TextBlock Text="Red de Climatización" FontSize="12" Foreground="#BBDEFB" Margin="0,4,0,0"/>
+                    <Border Width="40" Height="4" Background="#00BCD4" CornerRadius="2" Margin="0,12,0,0" HorizontalAlignment="Left"/>
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Top" Margin="8,0">
+                    <Button Classes="nav" Content="🔍 Escanear Red"
+                            Command="{Binding ScanViewModel.ShowScanCommand}"/>
+                    <Button Classes="nav" Content="📟 Dispositivos"
+                            Command="{Binding ScanViewModel.ShowScanCommand}"/>
+                    <Button Classes="nav" Content="⚙️ Configuración"
+                            Command="{Binding SettingsViewModel.ShowSettingsCommand}"/>
+                    <Button Classes="nav" Content="ℹ️ Información"
+                            Command="{Binding SettingsViewModel.ShowSettingsCommand}"/>
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Bottom" Margin="20,0,20,20">
+                    <TextBlock Text="Conectado a la red:" FontSize="11" Foreground="#BBDEFB"/>
+                    <TextBlock Text="{Binding LocalIP}" FontSize="14" FontWeight="Bold" Foreground="White"/>
+                    <TextBlock Text="{Binding SubnetString}" FontSize="12" Foreground="#BBDEFB" Margin="0,2,0,0"/>
+                    <Border Width="40" Height="4" Background="#2E7D32" CornerRadius="2" Margin="0,16,0,0" HorizontalAlignment="Left"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Contenido principal -->
+        <DockPanel>
+            <!-- Barra de estado -->
+            <Border DockPanel.Dock="Bottom" Background="{StaticResource PrimaryDarkBrush}" Padding="16,6">
+                <Panel>
+                    <Ellipse Width="10" Height="10" Fill="#4CAF50" Margin="0,0,8,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding StatusMessage}" Foreground="White" FontSize="12"
+                               Margin="18,0,0,0" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                </Panel>
+            </Border>
+
+            <!-- ContentControl -->
+            <ContentControl Content="{Binding CurrentViewModel}">
+                <ContentControl.DataTemplates>
+                    <DataTemplate DataType="{x:Type vm:ScanViewModel}">
+                        <views:ScanViewControl/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:DeviceDetailViewModel}">
+                        <views:DeviceDetailViewControl/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+                        <views:SettingsViewControl/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:AddDeviceViewModel}">
+                        <views:AddDeviceViewControl/>
+                    </DataTemplate>
+                </ContentControl.DataTemplates>
+            </ContentControl>
+        </DockPanel>
+    </DockPanel>
+</Window>

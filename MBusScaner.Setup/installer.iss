@@ -3,7 +3,7 @@
 ; Licencia: GPL v3
 
 #define MyAppName "HVAC Bus Scanner"
-#define MyAppVersion "1.0.1"
+#define MyAppVersion "1.0.2"
 #define MyAppPublisher "Jose Manuel Bernabeu Mejias"
 #define MyAppURL "https://github.com/jmbernabeu/MBusScaner"
 #define MyAppExeName "MBusScaner.exe"

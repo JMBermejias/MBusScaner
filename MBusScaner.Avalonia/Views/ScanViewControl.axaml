@@ -1,0 +1,62 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MBusScaner.Avalonia.ViewModels"
+             x:Class="MBusScaner.Avalonia.Views.ScanViewControl">
+
+    <Border Classes="card" Margin="16">
+        <DockPanel>
+            <!-- Cabecera -->
+            <StackPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                <TextBlock Classes="title" Text="Escaneo de Red de Climatización"/>
+                <TextBlock Classes="label" Text="Explore el bus RJ45 para localizar controladores, unidades y componentes"/>
+            </StackPanel>
+
+            <!-- Barra de escaneo -->
+            <Border Classes="card" DockPanel.Dock="Top" Margin="0,0,0,12">
+                <StackPanel>
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Left" Classes="label" Text="Subred:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBox Text="{Binding NetworkAddress, Mode=TwoWay}" Width="200" HorizontalAlignment="Left" Margin="0,0,8,0"/>
+                        <Button Classes="secondary" Content="Detectar" Command="{Binding DetectNetworkCommand}" Margin="0,0,8,0"/>
+                        <Button Classes="primary" Content="{Binding ScanButtonText}" Command="{Binding ScanCommand}" HorizontalAlignment="Right"/>
+                    </DockPanel>
+                    <ProgressBar Value="{Binding Progress}" Maximum="100" Margin="0,12,0,0"/>
+                    <TextBlock Classes="label" Text="{Binding ScanSummary}" Margin="0,8,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Lista de dispositivos -->
+            <Border Classes="card">
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                        <TextBlock Text="Dispositivos encontrados" FontWeight="SemiBold" FontSize="15" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding $parent[Window].((vm:MainViewModel)DataContext).Devices.Count, StringFormat=' {0} en total'}"
+                                   Classes="label" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                        <Button Classes="secondary" Content="➕ Añadir dispositivo"
+                                Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).AddDeviceViewModel.AddDeviceCommand}"
+                                HorizontalAlignment="Right" Margin="8,0,0,0"/>
+                    </DockPanel>
+
+                    <DataGrid ItemsSource="{Binding $parent[Window].((vm:MainViewModel)DataContext).Devices}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              CanUserResizeColumns="True"
+                              Background="Transparent"
+                              BorderThickness="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" Width="200"/>
+                            <DataGridTextColumn Header="IP" Binding="{Binding IPAddress}" Width="140"/>
+                            <DataGridTextColumn Header="Protocolo" Binding="{Binding ProtocolString}" Width="130"/>
+                            <DataGridTextColumn Header="Fabricante" Binding="{Binding Manufacturer}" Width="*"/>
+                            <DataGridTextColumn Header="Modelo" Binding="{Binding Model}" Width="*"/>
+                            <DataGridTextColumn Header="Última conexión" Binding="{Binding LastSeen, StringFormat='{}{0:dd/MM/yyyy HH:mm}'}" Width="150"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <TextBlock DockPanel.Dock="Bottom" Classes="label"
+                               Text="Seleccione un dispositivo para ver sus puertos, sensores y parámetros de control."/>
+                </DockPanel>
+            </Border>
+        </DockPanel>
+    </Border>
+</UserControl>

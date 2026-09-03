@@ -1,0 +1,62 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MBusScaner.Avalonia.Views.AddDeviceViewControl">
+
+    <ScrollViewer Margin="16">
+        <StackPanel>
+            <TextBlock Classes="title" Text="Añadir dispositivo manualmente" Margin="0,0,0,4"/>
+            <TextBlock Classes="label" Text="Introduzca la dirección del equipo para probar su ficha sin escanear la red" Margin="0,0,0,16"/>
+
+            <Border Classes="card" MaxWidth="640" HorizontalAlignment="Left">
+                <StackPanel>
+                    <TextBlock Text="Datos del dispositivo" FontWeight="SemiBold" FontSize="15"/>
+                    <Grid ColumnDefinitions="*,180" Margin="0,12,0,0">
+                        <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                            <TextBlock Classes="label" Text="Nombre del dispositivo"/>
+                            <TextBox Text="{Binding DeviceName, Mode=TwoWay}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Classes="label" Text="Dirección IP"/>
+                            <TextBox Text="{Binding DeviceIP, Mode=TwoWay}"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid ColumnDefinitions="200,120,*" Margin="0,16,0,0">
+                        <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                            <TextBlock Classes="label" Text="Protocolo"/>
+                            <ComboBox SelectedIndex="{Binding ProtocolIndex}">
+                                <ComboBoxItem Content="Modbus TCP/IP"/>
+                                <ComboBoxItem Content="BACnet/IP"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Margin="0,0,16,0">
+                            <TextBlock Classes="label" Text="Puerto TCP"/>
+                            <TextBox Text="{Binding Port, Mode=TwoWay}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Classes="label" Text="Unidad (Unit ID)"/>
+                            <TextBox Text="{Binding UnitId, Mode=TwoWay}" IsEnabled="{Binding IsModbus}"/>
+                            <TextBlock Classes="label" Text="Solo aplica a Modbus TCP" FontSize="11"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="{Binding ValidationMessage}" Foreground="{StaticResource ErrorBrush}"
+                               FontWeight="SemiBold" Margin="0,14,0,0" TextWrapping="Wrap"
+                               IsVisible="{Binding ValidationMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                        <Button Classes="secondary" Content="Cancelar" Command="{Binding CancelCommand}"/>
+                        <Button Classes="primary" Content="Añadir dispositivo" Command="{Binding AddDeviceCommand}"/>
+                    </StackPanel>
+
+                    <Border Background="{StaticResource PrimaryLightBrush}" CornerRadius="6" Padding="12" Margin="0,20,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Consejo" Foreground="{StaticResource PrimaryBrush}" FontWeight="Bold" FontSize="12"/>
+                            <TextBlock Text="El dispositivo se añadirá como 'Fuera de línea' y podrá ver sus puertos, sensores y parámetros de control de ejemplo."
+                                       Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" Margin="0,4,0,0" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

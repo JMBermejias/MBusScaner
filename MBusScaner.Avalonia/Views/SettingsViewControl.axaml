@@ -1,0 +1,71 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MBusScaner.Avalonia.ViewModels"
+             x:Class="MBusScaner.Avalonia.Views.SettingsViewControl">
+
+    <ScrollViewer Margin="16">
+        <StackPanel MaxWidth="700" HorizontalAlignment="Left">
+
+            <TextBlock Classes="title" Text="Configuración" Margin="0,0,0,4"/>
+            <TextBlock Classes="label" Text="Parámetros de red y del escáner" Margin="0,0,0,16"/>
+
+            <!-- Red local -->
+            <Border Classes="card">
+                <StackPanel>
+                    <TextBlock Text="Información de red local" FontWeight="SemiBold" FontSize="15"/>
+                    <Grid ColumnDefinitions="*,*" Margin="0,12,0,0">
+                        <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                            <TextBlock Classes="label" Text="IP del PC"/>
+                            <TextBlock Classes="value" Text="{Binding LocalIP}" FontWeight="SemiBold"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Classes="label" Text="Dirección MAC"/>
+                            <TextBlock Classes="value" Text="{Binding MACAddress}" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Puertos -->
+            <Border Classes="card">
+                <StackPanel>
+                    <TextBlock Text="Puertos de protocolo" FontWeight="SemiBold" FontSize="15"/>
+                    <Grid ColumnDefinitions="*,*,*" Margin="0,12,0,0">
+                        <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                            <TextBlock Classes="label" Text="Puerto Modbus TCP"/>
+                            <TextBox Text="{Binding ModbusPort, Mode=TwoWay}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Margin="0,0,16,0">
+                            <TextBlock Classes="label" Text="Puerto BACnet/IP"/>
+                            <TextBox Text="{Binding BacnetPort, Mode=TwoWay}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Classes="label" Text="Intervalo lectura (ms)"/>
+                            <TextBox Text="{Binding PollInterval, Mode=TwoWay}"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Botones -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4,0,16">
+                <Button Classes="secondary" Content="Restablecer" Command="{Binding ResetCommand}"/>
+                <Button Classes="primary" Content="Guardar configuración" Command="{Binding SaveCommand}"/>
+            </StackPanel>
+
+            <!-- Acerca de -->
+            <Border Classes="card">
+                <StackPanel>
+                    <TextBlock Text="Acerca de HVAC Bus Scanner" FontWeight="SemiBold" FontSize="15"/>
+                    <TextBlock Text="{Binding AppVersion, StringFormat='Versión {0}'}" Margin="0,8,0,0"/>
+                    <TextBlock Text="Software de escaneo y control de redes de climatización vía RJ45." Margin="0,4,0,0"/>
+                    <TextBlock Text="Protocolos: Modbus TCP/IP y BACnet/IP" Margin="0,4,0,0"/>
+                    <TextBlock Text="Desarrollado por Jose Manuel Bernabeu Mejias" FontWeight="SemiBold" Margin="0,12,0,0"/>
+                    <TextBlock Text="Licencia: GNU General Public License v3.0" Margin="0,4,0,0"/>
+                    <TextBlock Text="© 2026 - Distribuido bajo licencia GPL" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,8,0,0"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
