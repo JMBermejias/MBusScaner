@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using MBusScaner.Models;
@@ -33,7 +34,12 @@ namespace MBusScaner.Avalonia.ViewModels
                 var t = total == 0 ? 1 : total;
                 Progress = (double)done / t * 100;
             };
+            _main.Devices.CollectionChanged += (_, _) => OnPropertyChanged(nameof(DeviceCount));
         }
+
+        public ObservableCollection<Device> Devices => _main.Devices;
+        public int DeviceCount => _main.Devices.Count;
+        public IRelayCommand AddDeviceCommand => _main.AddDeviceViewModel.AddDeviceCommand;
 
         public string NetworkAddress { get => _networkAddress; set => SetProperty(ref _networkAddress, value); }
 

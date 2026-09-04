@@ -21,7 +21,7 @@ if not PUBLISH.exists():
     print("Ejecuta primero: dotnet publish MBusScaner.Avalonia/MBusScaner.Avalonia.csproj -c Release -r linux-x64 --self-contained -o publish-linux")
     sys.exit(1)
 
-VERSION = "1.0.6"
+VERSION = "1.0.7"
 ARCH = "amd64"
 PACKAGE = "mbusscaner"
 MAINTAINER = "Jose Manuel Bernabeu Mejias <jmbernab@users.noreply.github.com>"
@@ -185,7 +185,7 @@ def main():
         "export LD_LIBRARY_PATH=\"$INSTALL_DIR:${LD_LIBRARY_PATH:-}\"\n"
         "export DOTNET_ROOT=\"$INSTALL_DIR\"\n"
         "cd \"$INSTALL_DIR\"\n"
-        "\"$INSTALL_DIR/MBusScaner\" \"$@\" 2>&1 | tee /tmp/mbusscaner.log\n"
+        "exec \"$INSTALL_DIR/MBusScaner\" \"$@\"\n"
     )
     data_items.append(("/usr/bin/mbusscaner", None, (launcher.encode("utf-8"), 0o755)))
 
@@ -197,7 +197,7 @@ def main():
         "Comment=Escáner y control de redes de climatización\n"
         "Exec=/usr/bin/mbusscaner\n"
         "Icon=mbusscaner\n"
-        "Terminal=true\n"
+        "Terminal=false\n"
         "Categories=Utility;Network;\n"
     )
     data_items.append(("/usr/share/applications/mbusscaner.desktop", None, (desktop.encode("utf-8"), 0o644)))

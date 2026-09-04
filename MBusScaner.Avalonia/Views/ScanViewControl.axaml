@@ -1,6 +1,5 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:MBusScaner.Avalonia.ViewModels"
              x:Class="MBusScaner.Avalonia.Views.ScanViewControl">
 
     <Border Classes="card" Margin="16">
@@ -30,14 +29,14 @@
                 <DockPanel>
                     <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
                         <TextBlock Text="Dispositivos encontrados" FontWeight="SemiBold" FontSize="15" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding $parent[Window].((vm:MainViewModel)DataContext).Devices.Count, StringFormat=' {0} en total'}"
+                        <TextBlock Text="{Binding DeviceCount, StringFormat=' {0} en total'}"
                                    Classes="label" Margin="8,0,0,0" VerticalAlignment="Center"/>
                         <Button Classes="secondary" Content="➕ Añadir dispositivo"
-                                Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).AddDeviceViewModel.AddDeviceCommand}"
+                                Command="{Binding AddDeviceCommand}"
                                 HorizontalAlignment="Right" Margin="8,0,0,0"/>
                     </DockPanel>
 
-                    <DataGrid ItemsSource="{Binding $parent[Window].((vm:MainViewModel)DataContext).Devices}"
+                    <DataGrid ItemsSource="{Binding Devices}"
                               AutoGenerateColumns="False"
                               IsReadOnly="True"
                               CanUserResizeColumns="True"
