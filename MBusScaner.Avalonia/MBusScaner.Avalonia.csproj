@@ -5,8 +5,8 @@
     <Nullable>enable</Nullable>
     <AssemblyName>MBusScaner</AssemblyName>
     <RootNamespace>MBusScaner</RootNamespace>
-    <Version>1.0.2</Version>
-    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <Version>1.0.4</Version>
+    <AssemblyVersion>1.0.4.0</AssemblyVersion>
     <Authors>Jose Manuel Bernabeu Mejias</Authors>
     <Copyright>Copyright © 2026 Jose Manuel Bernabeu Mejias</Copyright>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>

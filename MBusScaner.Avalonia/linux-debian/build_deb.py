@@ -3,12 +3,11 @@
 """Construye un paquete Debian (.deb) para MBusScaner usando Python estándar.
 Genera manualmente el archivo 'ar' y los tarballs control/data."""
 
-import os
 import io
 import tarfile
 import hashlib
-import gzip
 import sys
+import time
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -22,7 +21,7 @@ if not PUBLISH.exists():
     print("Ejecuta primero: dotnet publish MBusScaner.Avalonia/MBusScaner.Avalonia.csproj -c Release -r linux-x64 --self-contained -o publish-linux")
     sys.exit(1)
 
-VERSION = "1.0.3"
+VERSION = "1.0.4"
 ARCH = "amd64"
 PACKAGE = "mbusscaner"
 MAINTAINER = "Jose Manuel Bernabeu Mejias <jmbernab@users.noreply.github.com>"
@@ -30,13 +29,11 @@ MAINTAINER = "Jose Manuel Bernabeu Mejias <jmbernab@users.noreply.github.com>"
 INSTALL_PREFIX = "/opt/mbusscaner"
 
 # ---------------------------------------------------------------------------
-# 1. CONTENIDO DEL PAQUETE (data)
+# 1. CONTENIDO DEL PAQUETE (data.tar.gz)
 # ---------------------------------------------------------------------------
 def build_data(data_items):
-    """data_items: list of (deb_path, on_disk_path, mode)"""
     buf = io.BytesIO()
     with tarfile.open(fileobj=buf, mode="w:gz", format=tarfile.GNU_FORMAT) as tar:
-        # Directorios
         dirs = set()
         for deb_path, _, _ in data_items:
             if "/" in deb_path.lstrip("/"):
@@ -47,93 +44,120 @@ def build_data(data_items):
             ti = tarfile.TarInfo(d)
             ti.type = tarfile.DIRTYPE
             ti.mode = 0o755
+            ti.mtime = int(time.time())
             tar.addfile(ti)
-        # Archivos
         for deb_path, on_disk, mode in data_items:
             if on_disk is None:
-                # Archivo generado (script) -> contenido en bytes
-                content, decomp = mode  # mode es (bytes, modo_unix)
+                content, decomp = mode
                 ti = tarfile.TarInfo(deb_path.lstrip("/"))
                 ti.size = len(content)
                 ti.mode = decomp
+                ti.mtime = int(time.time())
                 tar.addfile(ti, io.BytesIO(content))
             else:
                 ti = tarfile.TarInfo(deb_path.lstrip("/"))
                 data = Path(on_disk).read_bytes()
                 ti.size = len(data)
                 ti.mode = mode
+                ti.mtime = int(time.time())
                 tar.addfile(ti, io.BytesIO(data))
     return buf.getvalue()
 
 
 # ---------------------------------------------------------------------------
-# 2. CONTROL
+# 2. CONTROL (control.tar.gz)
 # ---------------------------------------------------------------------------
 def build_control(installed_size_kb):
-    control = f"""Package: {PACKAGE}
-Version: {VERSION}
-Section: utils
-Priority: optional
-Architecture: {ARCH}
-Maintainer: {MAINTAINER}
-Depends: libc6 (>= 2.31), libfontconfig1, freetype2 (>= 2.0), libx11-6, libxrandr2, libxinerama1, libxcursor1, libxi6, libgl1, libice6, libsm6
-Installed-Size: {installed_size_kb}
-Description: Escáner y control de redes de climatización (HVAC)
- Software de escaneo y control de redes de climatización (HVAC) mediante conexión RJ45.
- Protocolos: Modbus TCP/IP y BACnet/IP.
- Interfaz gráfica con tema azul claro.
- Licencia: GNU General Public License v3.0.
- Desarrollado por Jose Manuel Bernabeu Mejias.
-"""
+    control = (
+        f"Package: {PACKAGE}\n"
+        f"Version: {VERSION}\n"
+        f"Section: utils\n"
+        f"Priority: optional\n"
+        f"Architecture: {ARCH}\n"
+        f"Maintainer: {MAINTAINER}\n"
+        f"Depends: libc6 (>= 2.31), libfontconfig1, libfreetype6 (>= 2.0), libx11-6, libxrandr2, libxinerama1, libxcursor1, libxi6, libgl1, libice6, libsm6\n"
+        f"Installed-Size: {installed_size_kb}\n"
+        f"Description: Escaner y control de redes de climatizacion (HVAC)\n"
+        f" Software de escaneo y control de redes de climatizacion (HVAC) mediante conexion RJ45.\n"
+        f" Protocolos: Modbus TCP/IP y BACnet/IP.\n"
+        f" Interfaz grafica con tema azul claro.\n"
+        f" Licencia: GNU General Public License v3.0.\n"
+        f" Desarrollado por Jose Manuel Bernabeu Mejias.\n"
+    )
     return control.encode("utf-8")
 
 
-# ---------------------------------------------------------------------------
-# 3. SCRIPTS DE INSTALACIÓN (control)
-# ---------------------------------------------------------------------------
-def build_control_tar(control_bytes):
+def build_postinst():
+    script = (
+        "#!/bin/sh\n"
+        "set -e\n"
+        "if command -v update-desktop-database >/dev/null 2>&1; then\n"
+        "    update-desktop-database /usr/share/applications || true\n"
+        "fi\n"
+        "if command -v gtk-update-icon-cache >/dev/null 2>&1; then\n"
+        "    gtk-update-icon-cache -f -t /usr/share/icons/hicolor || true\n"
+        "fi\n"
+    )
+    return script.encode("utf-8")
+
+
+def build_md5sums(data_items):
+    lines = []
+    for deb_path, on_disk, _ in data_items:
+        if on_disk is None:
+            continue
+        data = Path(on_disk).read_bytes()
+        md5 = hashlib.md5(data).hexdigest()
+        lines.append(f"{md5}  {deb_path.lstrip('/')}\n")
+    return "".join(lines).encode("utf-8")
+
+
+def build_control_tar(control_bytes, postinst_bytes, md5sums_bytes):
     buf = io.BytesIO()
     with tarfile.open(fileobj=buf, mode="w:gz", format=tarfile.GNU_FORMAT) as tar:
-        # control
         ti = tarfile.TarInfo("control")
         ti.size = len(control_bytes)
         ti.mode = 0o644
+        ti.mtime = int(time.time())
         tar.addfile(ti, io.BytesIO(control_bytes))
-        # md5sums (de los datos) - lo calculamos después, lo pondremos en data
+
+        ti = tarfile.TarInfo("md5sums")
+        ti.size = len(md5sums_bytes)
+        ti.mode = 0o644
+        ti.mtime = int(time.time())
+        tar.addfile(ti, io.BytesIO(md5sums_bytes))
+
+        ti = tarfile.TarInfo("postinst")
+        ti.size = len(postinst_bytes)
+        ti.mode = 0o755
+        ti.mtime = int(time.time())
+        tar.addfile(ti, io.BytesIO(postinst_bytes))
     return buf.getvalue()
 
 
 # ---------------------------------------------------------------------------
-# 4. ARMAR EL ARCHIVO AR (.deb)
+# 3. ARCHIVO AR (.deb)
 # ---------------------------------------------------------------------------
 def build_deb(data_tar_bytes, control_tar_gz_bytes):
-    """Ensambla el archivo .deb (formato ar) con Python puro."""
     out = io.BytesIO()
-
-    # Encabezado ar global
     out.write(b"!<arch>\n")
 
-    def add_ar_member(name, data):
-        # Nombre (16 bytes)
-        name_bytes = name.encode("ascii")
-        out.write(name_bytes.ljust(16, b" "))
-        # Timestamp, uid, gid, mode (12+6+6+8)
-        out.write((b"0".ljust(12, b" ")))
-        out.write((b"0".ljust(6, b" ")))
-        out.write((b"0".ljust(6, b" ")))
-        out.write((b"100644".ljust(8, b" ")))
-        # Tamaño (10 bytes)
-        size = len(data)
-        out.write(str(size).encode("ascii").ljust(10, b" "))
+    def add_member(name, data):
+        ts = int(time.time())
+        out.write(name.encode("ascii").ljust(16, b" "))
+        out.write(str(ts).encode("ascii").ljust(12, b" "))
+        out.write(b"0     ")
+        out.write(b"0     ")
+        out.write(b"100644  ")
+        out.write(str(len(data)).encode("ascii").ljust(10, b" "))
         out.write(b"`\n")
         out.write(data)
-        # Alineación a 2 bytes
-        if size % 2 != 0:
+        if len(data) % 2 != 0:
             out.write(b"\n")
 
-    add_ar_member("debian-binary", b"2.0\n")
-    add_ar_member("control.tar.gz", control_tar_gz_bytes)
-    add_ar_member("data.tar.gz", data_tar_bytes)
+    add_member("debian-binary", b"2.0\n")
+    add_member("control.tar.gz", control_tar_gz_bytes)
+    add_member("data.tar.gz", data_tar_bytes)
     return out.getvalue()
 
 
@@ -141,57 +165,54 @@ def build_deb(data_tar_bytes, control_tar_gz_bytes):
 # MAIN
 # ---------------------------------------------------------------------------
 def main():
-    # --- Datos: todos los archivos del publish + script + desktop + icono ---
     data_items = []
 
-    # Copiar TODOS los archivos del directorio publish-linux
     for f in sorted(PUBLISH.iterdir()):
         if f.is_file():
             deb_path = INSTALL_PREFIX + "/" + f.name
-            mode = 0o755 if f.suffix in ("", ".so", ".so.*") or f.name == "MBusScaner" else 0o644
-            # Detectar ejecutables y bibliotecas compartidas
             if f.suffix in (".so", ".dylib") or f.name in ("MBusScaner",):
                 mode = 0o755
+            else:
+                mode = 0o644
             data_items.append((deb_path, str(f), mode))
 
     print(f"Archivos del publish: {len([i for i in data_items if i[0].startswith(INSTALL_PREFIX)])}")
 
-    # Script de lanzamiento
-    launcher = f"""#!/bin/sh
-exec /opt/mbusscaner/MBusScaner "$@"
-"""
+    launcher = "#!/bin/sh\nexec /opt/mbusscaner/MBusScaner \"$@\"\n"
     data_items.append(("/usr/bin/mbusscaner", None, (launcher.encode("utf-8"), 0o755)))
 
-    # .desktop (menú)
-    desktop = f"""[Desktop Entry]
-Type=Application
-Name=MBusScaner HVAC
-GenericName=HVAC Bus Scanner
-Comment=Escáner y control de redes de climatización
-Exec=/usr/bin/mbusscaner
-Icon=mbusscaner
-Terminal=false
-Categories=Utility;Network;
-"""
+    desktop = (
+        "[Desktop Entry]\n"
+        "Type=Application\n"
+        "Name=MBusScaner HVAC\n"
+        "GenericName=HVAC Bus Scanner\n"
+        "Comment=Escáner y control de redes de climatización\n"
+        "Exec=/usr/bin/mbusscaner\n"
+        "Icon=mbusscaner\n"
+        "Terminal=false\n"
+        "Categories=Utility;Network;\n"
+    )
     data_items.append(("/usr/share/applications/mbusscaner.desktop", None, (desktop.encode("utf-8"), 0o644)))
 
-    # Icono SVG
-    svg_icon = """<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
-  <rect width="128" height="128" rx="20" fill="#2196F3"/>
-  <circle cx="64" cy="52" r="22" fill="white"/>
-  <rect x="30" y="78" width="26" height="8" rx="4" fill="#CFE8FF"/>
-  <rect x="60" y="84" width="26" height="8" rx="4" fill="#CFE8FF"/>
-  <rect x="90" y="78" width="20" height="8" rx="4" fill="white"/>
-</svg>
-"""
+    svg_icon = (
+        '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">\n'
+        '  <rect width="128" height="128" rx="20" fill="#2196F3"/>\n'
+        '  <circle cx="64" cy="52" r="22" fill="white"/>\n'
+        '  <rect x="30" y="78" width="26" height="8" rx="4" fill="#CFE8FF"/>\n'
+        '  <rect x="60" y="84" width="26" height="8" rx="4" fill="#CFE8FF"/>\n'
+        '  <rect x="90" y="78" width="20" height="8" rx="4" fill="white"/>\n'
+        '</svg>\n'
+    )
     data_items.append(("/usr/share/icons/hicolor/scalable/apps/mbusscaner.svg", None, (svg_icon.encode("utf-8"), 0o644)))
 
     data_tar = build_data(data_items)
 
     total_size = sum(f.stat().st_size for f in PUBLISH.iterdir() if f.is_file())
-    installed_size_kb = int(total_size / 1024)
+    installed_size_kb = int(total_size / 1024) + 1
     control_bytes = build_control(installed_size_kb)
-    control_tar_gz = build_control_tar(control_bytes)
+    postinst_bytes = build_postinst()
+    md5sums_bytes = build_md5sums(data_items)
+    control_tar_gz = build_control_tar(control_bytes, postinst_bytes, md5sums_bytes)
 
     deb_bytes = build_deb(data_tar, control_tar_gz)
 
@@ -199,8 +220,6 @@ Categories=Utility;Network;
     deb_path.write_bytes(deb_bytes)
     print(f"OK -> {deb_path} ({len(deb_bytes)/1024/1024:.1f} MB)")
 
-    if not deb_path.name.lower().endswith(".deb"):
-        print("ADVERTENCIA: la extensión no es .deb")
 
 if __name__ == "__main__":
     main()
