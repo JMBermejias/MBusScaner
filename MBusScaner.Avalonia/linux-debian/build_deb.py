@@ -11,11 +11,18 @@ import gzip
 import sys
 from pathlib import Path
 
-PUBLISH = Path(r"C:\Users\jmber\Software\MBusScaner\publish-linux")
-OUT = Path(r"C:\Users\jmber\Software\MBusScaner\MBusScaner.Avalonia\linux-debian")
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = SCRIPT_DIR.parent.parent
+PUBLISH = REPO_ROOT / "publish-linux"
+OUT = SCRIPT_DIR
 OUT.mkdir(parents=True, exist_ok=True)
 
-VERSION = "1.0.2"
+if not PUBLISH.exists():
+    print(f"ERROR: No se encuentra el directorio {PUBLISH}")
+    print("Ejecuta primero: dotnet publish MBusScaner.Avalonia/MBusScaner.Avalonia.csproj -c Release -r linux-x64 --self-contained -o publish-linux")
+    sys.exit(1)
+
+VERSION = "1.0.3"
 ARCH = "amd64"
 PACKAGE = "mbusscaner"
 MAINTAINER = "Jose Manuel Bernabeu Mejias <jmbernab@users.noreply.github.com>"
@@ -62,7 +69,7 @@ def build_data(data_items):
 # ---------------------------------------------------------------------------
 # 2. CONTROL
 # ---------------------------------------------------------------------------
-def build_control():
+def build_control(installed_size_kb):
     control = f"""Package: {PACKAGE}
 Version: {VERSION}
 Section: utils
@@ -70,7 +77,7 @@ Priority: optional
 Architecture: {ARCH}
 Maintainer: {MAINTAINER}
 Depends: libc6 (>= 2.31), libfontconfig1, freetype2 (>= 2.0), libx11-6, libxrandr2, libxinerama1, libxcursor1, libxi6, libgl1, libice6, libsm6
-Installed-Size: {int((Path(PUBLISH) / 'MBusScaner').stat().st_size / 1024)}
+Installed-Size: {installed_size_kb}
 Description: Escáner y control de redes de climatización (HVAC)
  Software de escaneo y control de redes de climatización (HVAC) mediante conexión RJ45.
  Protocolos: Modbus TCP/IP y BACnet/IP.
@@ -134,12 +141,20 @@ def build_deb(data_tar_bytes, control_tar_gz_bytes):
 # MAIN
 # ---------------------------------------------------------------------------
 def main():
-    # --- Datos: binario + libs + script de lanzamiento + desktop + icono ---
-    bin_path = PUBLISH / "MBusScaner"
+    # --- Datos: todos los archivos del publish + script + desktop + icono ---
     data_items = []
-    data_items.append((INSTALL_PREFIX + "/MBusScaner", str(bin_path), 0o755))
-    data_items.append((INSTALL_PREFIX + "/libSkiaSharp.so", str(PUBLISH / "libSkiaSharp.so"), 0o755))
-    data_items.append((INSTALL_PREFIX + "/libHarfBuzzSharp.so", str(PUBLISH / "libHarfBuzzSharp.so"), 0o755))
+
+    # Copiar TODOS los archivos del directorio publish-linux
+    for f in sorted(PUBLISH.iterdir()):
+        if f.is_file():
+            deb_path = INSTALL_PREFIX + "/" + f.name
+            mode = 0o755 if f.suffix in ("", ".so", ".so.*") or f.name == "MBusScaner" else 0o644
+            # Detectar ejecutables y bibliotecas compartidas
+            if f.suffix in (".so", ".dylib") or f.name in ("MBusScaner",):
+                mode = 0o755
+            data_items.append((deb_path, str(f), mode))
+
+    print(f"Archivos del publish: {len([i for i in data_items if i[0].startswith(INSTALL_PREFIX)])}")
 
     # Script de lanzamiento
     launcher = f"""#!/bin/sh
@@ -160,7 +175,7 @@ Categories=Utility;Network;
 """
     data_items.append(("/usr/share/applications/mbusscaner.desktop", None, (desktop.encode("utf-8"), 0o644)))
 
-    # Icono agnóstico (PNG placeholder simple) - pondremos un SVG simple
+    # Icono SVG
     svg_icon = """<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
   <rect width="128" height="128" rx="20" fill="#2196F3"/>
   <circle cx="64" cy="52" r="22" fill="white"/>
@@ -173,7 +188,9 @@ Categories=Utility;Network;
 
     data_tar = build_data(data_items)
 
-    control_bytes = build_control()
+    total_size = sum(f.stat().st_size for f in PUBLISH.iterdir() if f.is_file())
+    installed_size_kb = int(total_size / 1024)
+    control_bytes = build_control(installed_size_kb)
     control_tar_gz = build_control_tar(control_bytes)
 
     deb_bytes = build_deb(data_tar, control_tar_gz)
@@ -182,7 +199,6 @@ Categories=Utility;Network;
     deb_path.write_bytes(deb_bytes)
     print(f"OK -> {deb_path} ({len(deb_bytes)/1024/1024:.1f} MB)")
 
-    # Verificación de integridad del tamaño
     if not deb_path.name.lower().endswith(".deb"):
         print("ADVERTENCIA: la extensión no es .deb")
 
