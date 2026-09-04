@@ -21,7 +21,7 @@ if not PUBLISH.exists():
     print("Ejecuta primero: dotnet publish MBusScaner.Avalonia/MBusScaner.Avalonia.csproj -c Release -r linux-x64 --self-contained -o publish-linux")
     sys.exit(1)
 
-VERSION = "1.0.4"
+VERSION = "1.0.5"
 ARCH = "amd64"
 PACKAGE = "mbusscaner"
 MAINTAINER = "Jose Manuel Bernabeu Mejias <jmbernab@users.noreply.github.com>"
@@ -91,6 +91,7 @@ def build_postinst():
     script = (
         "#!/bin/sh\n"
         "set -e\n"
+        "ldconfig\n"
         "if command -v update-desktop-database >/dev/null 2>&1; then\n"
         "    update-desktop-database /usr/share/applications || true\n"
         "fi\n"
@@ -178,7 +179,14 @@ def main():
 
     print(f"Archivos del publish: {len([i for i in data_items if i[0].startswith(INSTALL_PREFIX)])}")
 
-    launcher = "#!/bin/sh\nexec /opt/mbusscaner/MBusScaner \"$@\"\n"
+    launcher = (
+        "#!/bin/sh\n"
+        "INSTALL_DIR=/opt/mbusscaner\n"
+        "export LD_LIBRARY_PATH=\"$INSTALL_DIR:${LD_LIBRARY_PATH:-}\"\n"
+        "export DOTNET_ROOT=\"$INSTALL_DIR\"\n"
+        "cd \"$INSTALL_DIR\"\n"
+        "exec \"$INSTALL_DIR/MBusScaner\" \"$@\"\n"
+    )
     data_items.append(("/usr/bin/mbusscaner", None, (launcher.encode("utf-8"), 0o755)))
 
     desktop = (
@@ -204,6 +212,9 @@ def main():
         '</svg>\n'
     )
     data_items.append(("/usr/share/icons/hicolor/scalable/apps/mbusscaner.svg", None, (svg_icon.encode("utf-8"), 0o644)))
+
+    ldconfig_conf = "/opt/mbusscaner\n"
+    data_items.append(("/etc/ld.so.conf.d/mbusscaner.conf", None, (ldconfig_conf.encode("utf-8"), 0o644)))
 
     data_tar = build_data(data_items)
 
