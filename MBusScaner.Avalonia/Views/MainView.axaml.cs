@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Threading;
 
@@ -9,10 +10,10 @@ namespace MBusScaner.Avalonia.Views
         public MainView()
         {
             InitializeComponent();
-            Opened += (_, _) =>
+            Opened += async (_, _) =>
             {
-                if (WindowState != WindowState.Maximized)
-                    WindowState = WindowState.Maximized;
+                await Task.Delay(100);
+                Dispatcher.UIThread.Post(() => WindowState = WindowState.Maximized);
             };
         }
     }

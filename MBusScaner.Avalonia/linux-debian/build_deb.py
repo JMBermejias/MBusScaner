@@ -21,7 +21,7 @@ if not PUBLISH.exists():
     print("Ejecuta primero: dotnet publish MBusScaner.Avalonia/MBusScaner.Avalonia.csproj -c Release -r linux-x64 --self-contained -o publish-linux")
     sys.exit(1)
 
-VERSION = "1.0.8"
+VERSION = "1.0.9"
 ARCH = "amd64"
 PACKAGE = "mbusscaner"
 MAINTAINER = "Jose Manuel Bernabeu Mejias <jmbernab@users.noreply.github.com>"
