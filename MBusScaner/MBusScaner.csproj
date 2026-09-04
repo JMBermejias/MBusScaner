@@ -7,9 +7,9 @@
     <ApplicationIcon>MBusScaner.ico</ApplicationIcon>
     <AssemblyName>MBusScaner</AssemblyName>
     <RootNamespace>MBusScaner</RootNamespace>
-    <Version>1.0.2</Version>
-    <AssemblyVersion>1.0.2.0</AssemblyVersion>
-    <FileVersion>1.0.2.0</FileVersion>
+    <Version>1.0.3</Version>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <FileVersion>1.0.3.0</FileVersion>
     <Authors>Jose Manuel Bernabeu Mejias</Authors>
     <Description>Software de escaneo y control de redes de climatización HVAC vía Modbus TCP/IP y BACnet/IP</Description>
     <Copyright>Copyright © 2026 Jose Manuel Bernabeu Mejias</Copyright>

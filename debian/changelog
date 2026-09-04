@@ -1,3 +1,9 @@
+mbusscaner (1.0.3-1) unstable; urgency=medium
+
+  * Corregido formato ar del .deb (cabecera de 60 bytes)
+
+ -- Jose Manuel Bernabeu Mejias <jmbernab@users.noreply.github.com>  Fri, 04 Sep 2026 18:00:00 +0200
+
 mbusscaner (1.0.2-1) unstable; urgency=medium
 
   * Corregida dependencia freetype2 -> libfreetype6 (nomenclatura Debian)
