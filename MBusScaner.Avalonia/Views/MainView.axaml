@@ -8,7 +8,8 @@
         Width="1280" Height="800" MinWidth="900" MinHeight="600"
         WindowState="Maximized"
         WindowStartupLocation="CenterScreen"
-        Background="{StaticResource BackgroundBrush}">
+        Background="{StaticResource BackgroundBrush}"
+        x:Name="MainWindow">
 
     <Window.Resources>
         <conv:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
