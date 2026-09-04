@@ -1,0 +1,4 @@
+publish/MBusScaner.exe usr/share/mbusscaner
+publish/*.dll usr/share/mbusscaner
+LICENSE usr/share/doc/mbusscaner
+README.md usr/share/doc/mbusscaner

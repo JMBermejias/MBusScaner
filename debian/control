@@ -1,0 +1,20 @@
+Source: mbusscaner
+Section: utils
+Priority: optional
+Maintainer: Jose Manuel Bernabeu Mejias <jmbernab@users.noreply.github.com>
+Build-Depends: debhelper (>= 13)
+Standards-Version: 4.6.2
+Homepage: https://github.com/JMBermejias/MBusScaner
+
+Package: mbusscaner
+Architecture: amd64
+Version: ${VERSION}
+Installed-Size: ${INSTALLED_SIZE}
+Depends: wine, wine64, libfreetype6 (>= 2.0), libfontconfig1, libx11-6, libxrandr2, libxinerama1, libxcursor1, libxi6, libgl1, libice6, libsm6
+Recommends: fonts-wine
+Description: Escáner y control de redes de climatización (HVAC)
+ Software de escaneo y control de redes de climatización (HVAC) mediante conexión RJ45.
+ Protocolos: Modbus TCP/IP y BACnet/IP.
+ Interfaz gráfica con tema azul claro.
+ Licencia: GNU General Public License v3.0.
+ Desarrollado por Jose Manuel Bernabeu Mejias.

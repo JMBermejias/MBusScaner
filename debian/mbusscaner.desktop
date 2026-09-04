@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=HVAC Bus Scanner
+Comment=Escáner y control de redes de climatización HVAC
+Exec=wine /usr/share/mbusscaner/MBusScaner.exe
+Icon=mbusscaner
+Terminal=false
+Type=Application
+Categories=Utility;Network;Science;
+Keywords=HVAC;Modbus;BACnet;scanner;

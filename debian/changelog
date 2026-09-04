@@ -1,0 +1,12 @@
+mbusscaner (1.0.2-1) unstable; urgency=medium
+
+  * Corregida dependencia freetype2 -> libfreetype6 (nomenclatura Debian)
+  * Añadida dependencia wine para ejecución en Linux
+
+ -- Jose Manuel Bernabeu Mejias <jmbernab@users.noreply.github.com>  Fri, 04 Sep 2026 12:00:00 +0200
+
+mbusscaner (1.0.1-1) unstable; urgency=medium
+
+  * Versión inicial con empaquetado .deb
+
+ -- Jose Manuel Bernabeu Mejias <jmbernab@users.noreply.github.com>  Thu, 03 Sep 2026 12:00:00 +0200

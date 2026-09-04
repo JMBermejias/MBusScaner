@@ -33,6 +33,9 @@ local.settings.json
 Instalador/
 *.iss.dep
 
+# Build
+build/
+
 # Logs
 *.log
 logs/
